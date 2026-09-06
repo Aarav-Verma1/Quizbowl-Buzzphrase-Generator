@@ -1,0 +1,2230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obsidian | Advanced Quiz Bowl Analysis Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-500: #3b82f6;
+            --primary-600: #2563eb;
+            --primary-700: #1d4ed8;
+            --secondary-500: #10b981;
+            --secondary-600: #059669;
+            --accent-500: #8b5cf6;
+            --accent-600: #7c3aed;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --dark-800: #1f2937;
+            --dark-900: #111827;
+
+            /* Light mode variables */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-tertiary: #64748b;
+            --border-color: #e2e8f0;
+            --navbar-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --hover-bg: #f1f5f9;
+        }
+
+        html[data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --border-color: #334155;
+            --navbar-bg: rgba(15, 23, 42, 0.95);
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --hover-bg: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Parallax effect */
+        .parallax {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .parallax::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            z-index: 1;
+            transform: translateZ(-1px) scale(2);
+            animation: float 20s ease-in-out infinite;
+            transition: opacity 0.3s ease;
+        }
+
+        html[data-theme="dark"] .parallax::before {
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        .navbar {
+            background: var(--navbar-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        /* Dark mode toggle */
+        .theme-toggle {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            background: var(--border-color);
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            gap: 0;
+        }
+
+        .theme-toggle:hover {
+            background: var(--border-color);
+            opacity: 0.8;
+        }
+
+        .theme-toggle-circle {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            left: 2px;
+            transition: left 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        html[data-theme="dark"] .theme-toggle {
+            background: var(--primary-600);
+        }
+
+        html[data-theme="dark"] .theme-toggle-circle {
+            left: 26px;
+        }
+
+        .theme-toggle-icon {
+            font-size: 1rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            background: linear-gradient(135deg, var(--primary-600), var(--accent-600));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-600);
+            background: var(--hover-bg);
+        }
+
+        .nav-link.primary {
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link.primary:hover {
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .hero-section {
+            padding: 8rem 0 6rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            transition: background-color 0.3s ease;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        .hero-badge-icon {
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+            border-radius: 50%;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            transition: color 0.3s ease;
+        }
+
+        .hero-title .gradient-text {
+            background: linear-gradient(135deg, var(--primary-600), var(--accent-600));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 400;
+            line-height: 1.5;
+            transition: color 0.3s ease;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary {
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+        }
+
+        .cta-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .cta-secondary:hover {
+            background: var(--hover-bg);
+            transform: translateY(-1px);
+        }
+
+        .features-section {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 6rem 0;
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .features-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .features-title {
+            font-size: clamp(2.5rem, 4vw, 3.5rem);
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .features-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            transition: color 0.3s ease;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .feature-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary-500);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.75rem;
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+            transition: color 0.3s ease;
+        }
+
+        .stats-section {
+            background: var(--bg-secondary);
+            padding: 3rem 0;
+            border-top: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .stats-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-500);
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .app-section {
+            padding: 6rem 0;
+            background: var(--bg-primary);
+            transition: background-color 0.3s ease;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .app-title {
+            font-size: clamp(2rem, 3vw, 2.5rem);
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .app-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            transition: color 0.3s ease;
+        }
+
+        .card {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-500), var(--accent-500), var(--secondary-500));
+        }
+
+        .form-section {
+            margin-bottom: 3rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        input[type="text"]:hover, input[type="number"]:hover, select:hover {
+            border-color: var(--text-tertiary);
+            background: var(--bg-primary);
+        }
+
+        .autocomplete-container {
+            position: relative;
+        }
+
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .autocomplete-suggestion {
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .autocomplete-suggestion:hover, .autocomplete-suggestion.selected {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-600);
+        }
+
+        .autocomplete-suggestion:last-child {
+            border-bottom: none;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            position: relative;
+            border: none;
+            outline: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: white;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+            width: 100%;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--hover-bg);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--secondary-500), var(--secondary-600));
+            color: white;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--secondary-600), #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-1px);
+        }
+
+        .btn-small {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.78rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-tertiary);
+            transition: color 0.3s ease;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary-500);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .results {
+            display: none;
+            margin-top: 4rem;
+        }
+
+        .results-header {
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            transition: color 0.3s ease;
+        }
+
+        .results-info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 3rem;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .results-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .result-stat {
+            padding: 1rem;
+        }
+
+        .result-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-500);
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .result-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-top: 0.25rem;
+            transition: color 0.3s ease;
+        }
+
+        .sort-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .sort-select {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sort-select label {
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+
+        .sort-select select {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .buzzwords-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .buzzword {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .buzzword.deselected {
+            opacity: 0.5;
+            background: var(--bg-tertiary);
+            border: 1px dashed var(--border-color);
+        }
+
+        .buzzword::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-500), var(--accent-500));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .buzzword:hover:not(.deselected) {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary-500);
+        }
+
+        .buzzword:hover:not(.deselected)::before {
+            opacity: 1;
+        }
+
+        .buzzword-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .buzzword-number {
+            background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .buzzword-text-container {
+            flex: 1;
+        }
+
+        .buzzword-text {
+            font-weight: 700;
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 0.25rem;
+        }
+
+        .buzzword-meta {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            transition: color 0.3s ease;
+        }
+
+        .buzzword-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .buzzword-explanation {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-top: 0.75rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.4s ease;
+            opacity: 0;
+        }
+
+        .buzzword-explanation.expanded {
+            max-height: 300px;
+            opacity: 1;
+        }
+
+        .explanation-section {
+            display: none;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .explanation-loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-tertiary);
+            transition: color 0.3s ease;
+        }
+
+        .export-section {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .load-more-section {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .error {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.05));
+            color: #dc2626;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            font-weight: 500;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .input-help {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-top: 0.5rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .nav-content {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-container, .hero-content, .features-content, .stats-content {
+                padding: 0 1rem;
+            }
+
+            .hero-section {
+                padding: 4rem 0 3rem 0;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                align-items: stretch;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+
+            .features-section {
+                padding: 4rem 0;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .card {
+                padding: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .buzzwords-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .buzzword-header {
+                flex-direction: column;
+            }
+
+            .buzzword-actions {
+                flex-direction: column;
+            }
+
+            .sort-controls {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .app-section {
+                padding: 4rem 0;
+            }
+        }
+        /* Cart badge and modal */
+        .cart-badge {
+            background: var(--primary-600);
+            color: white;
+            border-radius: 999px;
+            padding: 0 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 0.25rem;
+        }
+
+        .cart-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .cart-modal {
+            background: var(--bg-primary);
+            width: min(900px, 94vw);
+            max-height: 80vh;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .cart-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: border-color 0.3s ease;
+        }
+
+        .cart-modal-body {
+            padding: 1rem 1.5rem;
+            overflow: auto;
+        }
+
+        .cart-modal-footer {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .cart-list {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.5rem 1rem;
+            align-items: center;
+        }
+
+        .cart-item {
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="#" class="logo">
+                <div class="logo-icon">Q</div>
+                <span class="logo-text">Obsidian</span>
+            </a>
+            <div class="nav-links">
+                <button id="themeToggle" class="theme-toggle" title="Toggle dark mode">
+                    <span class="theme-toggle-circle">☀️</span>
+                </button>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#analyzer" class="nav-link primary">Start Analysis</a>
+                <a href="#" id="openCartBtn" class="nav-link">Cart <span id="cartCountBadge" class="cart-badge" style="display:none;">0</span></a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section parallax">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <div class="hero-badge-icon"></div>
+                Advanced Quiz Bowl Analytics
+            </div>
+            <h1 class="hero-title">
+                Master Quiz Bowl with
+                <span class="gradient-text">AI-Powered</span>
+                Buzzword Analysis
+            </h1>
+            <p class="hero-subtitle">
+                Leverage cutting-edge TF-IDF algorithms and machine learning to identify the most critical buzzwords from thousands of quiz bowl questions. Gain the competitive edge you need.
+            </p>
+            <div class="hero-cta">
+                <a href="#analyzer" class="cta-primary">Start Free Analysis</a>
+                <a href="#features" class="cta-secondary">View Features</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Modal -->
+    <div id="cartModalOverlay" class="cart-modal-overlay">
+        <div class="cart-modal">
+            <div class="cart-modal-header">
+                <h3 style="font-weight: 800; color: var(--text-primary);">Shopping Cart</h3>
+                <button id="closeCartBtn" class="btn btn-secondary btn-small">Close</button>
+            </div>
+            <div class="cart-modal-body">
+                <div class="form-group" style="margin-bottom: 0.75rem;">
+                    <input type="text" id="cartSearchInput" placeholder="Search cart..." autocomplete="off">
+                </div>
+                <div id="cartEmptyState" style="display:none; text-align:center; color: var(--text-secondary); padding: 2rem;">Your cart is empty. Add buzzphrases from results.</div>
+                <div id="cartList" class="cart-list"></div>
+            </div>
+            <div class="cart-modal-footer">
+                <button id="clearCartBtn" class="btn btn-danger btn-small">Clear Cart</button>
+                <button id="exportCartBtn" class="btn btn-success">Export All to CSV</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="features-section parallax" id="features">
+        <div class="features-content">
+            <div class="features-header">
+                <h2 class="features-title">Professional-Grade Analysis Tools</h2>
+                <p class="features-subtitle">
+                    Built by quiz bowl experts, powered by advanced algorithms, trusted by champions.
+                </p>
+            </div>
+           
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Advanced TF-IDF Analysis</h3>
+                    <p class="feature-description">
+                        State-of-the-art Term Frequency-Inverse Document Frequency algorithms analyze thousands of questions to identify the most distinctive and valuable buzzwords with mathematical precision.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Real-Time QBReader Integration</h3>
+                    <p class="feature-description">
+                        Direct integration with the comprehensive QBReader database provides instant access to the most up-to-date question sets and autocomplete functionality.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3 class="feature-title">AI-Powered Explanations</h3>
+                    <p class="feature-description">
+                        Optional GPT-powered explanations help you understand why each buzzword is crucial for identifying specific topics, providing educational context and strategic insights.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Comprehensive Analytics</h3>
+                    <p class="feature-description">
+                        Get detailed rankings, frequency analysis, and semantic clustering of buzzwords with professional-grade filtering and redundancy removal algorithms.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3 class="feature-title">Anki Integration</h3>
+                    <p class="feature-description">
+                        Export your results directly to Anki flashcard format for efficient memorization and practice, streamlining your study workflow.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h3 class="feature-title">Customizable Parameters</h3>
+                    <p class="feature-description">
+                        Fine-tune your analysis with category filtering, question count limits, and advanced NLP preprocessing options for targeted results.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stats-content">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">500K+</span>
+                        <span class="stat-label">Questions Analyzed</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">15</span>
+                        <span class="stat-label">Subject Categories</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">98%</span>
+                        <span class="stat-label">Accuracy Rate</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">2.3s</span>
+                        <span class="stat-label">Avg Analysis Time</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="app-section" id="analyzer">
+        <div class="main-container">
+            <div class="app-header">
+                <h2 class="app-title">Professional Buzzword Analyzer</h2>
+                <p class="app-subtitle">
+                    Enter any topic to discover the most critical identifying phrases from our comprehensive database
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="form-section">
+                    <form id="extractForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="answer" class="form-label">Topic / Answer</label>
+                                <div class="autocomplete-container">
+                                    <input
+                                        type="text"
+                                        id="answer"
+                                        name="answer"
+                                        placeholder="e.g., William Shakespeare, Napoleon Bonaparte, DNA Structure..."
+                                        required
+                                        autocomplete="off"
+                                    >
+                                    <div class="input-help">Start typing any topic. Autocomplete powered by live QBReader database.</div>
+                                    <div class="autocomplete-suggestions" id="autocompleteSuggestions"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="category" class="form-label">Subject Category</label>
+                                <select id="category" name="category">
+                                    <option selected value="">All Categories (Recommended)</option>
+                                    <option value="Literature">Literature</option>
+                                    <option value="History">History</option>
+                                    <option value="Science">Science</option>
+                                    <option value="Fine Arts">Fine Arts</option>
+                                    <option value="Religion">Religion</option>
+                                    <option value="Mythology">Mythology</option>
+                                    <option value="Philosophy">Philosophy</option>
+                                    <option value="Social Science">Social Science</option>
+                                    <option value="Current Events">Current Events</option>
+                                    <option value="Geography">Geography</option>
+                                    <option value="Other Academic">Other Academic</option>
+                                    <option value="Trash">Trash</option>
+                                    <option value="Pop Culture">Pop Culture</option>
+                                </select>
+                                <div class="input-help">Leave as "All Categories" for comprehensive analysis across all subjects.</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="maxQuestions" class="form-label">Analysis Depth</label>
+                                <input
+                                    type="number"
+                                    id="maxQuestions"
+                                    name="maxQuestions"
+                                    value="100"
+                                    min="50"
+                                    max="10000"
+                                    placeholder="100"
+                                >
+                                <div class="input-help">Number of questions to analyze (50-10,000). More questions = higher accuracy but longer processing time.</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sortBy" class="form-label">Sort By</label>
+                                <select id="sortBy" name="sortBy">
+                                    <option value="frequency">Frequency (TF-IDF)</option>
+                                    <option value="celerity">Celerity (Early Appearance)</option>
+                                    <option value="hybrid">Hybrid (Optimal for Studying)</option>
+                                </select>
+                                <div class="input-help">Hybrid combines frequency with early appearance for the best buzz clues</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="searchMode" class="form-label">Search Mode</label>
+                                <select id="searchMode" name="searchMode">
+                                    <option value="exact">Exact Text Search</option>
+                                    <option value="semantic">AI-Powered Search</option>
+                                </select>
+                                <div class="input-help">AI-Powered search uses semantic similarity to find the same topic expressed in different ways (e.g., "Bharat" finds "Republic of India")</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row" id="hybridWeightsSection" style="display: none;">
+                            <div class="form-group">
+                                <label class="form-label">Hybrid Score Weights (Celerity vs Frequency)</label>
+                                <div style="display: flex; gap: 1rem; align-items: center;">
+                                    <div style="flex: 1;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                            <label for="celerityWeight" style="font-size: 0.9rem; color: var(--text-primary); font-weight: 500;">Celerity (Early Appearance)</label>
+                                            <span id="celerityWeightValue" style="font-weight: 600; color: var(--primary-500);">60%</span>
+                                        </div>
+                                        <input type="range" id="celerityWeight" name="celerityWeight" min="0" max="100" value="60" style="width: 100%; cursor: pointer;">
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 1rem; align-items: center;">
+                                    <div style="flex: 1;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                            <label for="frequencyWeight" style="font-size: 0.9rem; color: var(--text-primary); font-weight: 500;">Frequency (TF-IDF)</label>
+                                            <span id="frequencyWeightValue" style="font-weight: 600; color: var(--secondary-500);">40%</span>
+                                        </div>
+                                        <input type="range" id="frequencyWeight" name="frequencyWeight" min="0" max="100" value="40" style="width: 100%; cursor: pointer;">
+                                    </div>
+                                </div>
+                                <div class="input-help">Adjust how much the algorithm prioritizes early-appearing phrases vs frequently-appearing phrases. Weights must sum to 100%.</div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            Analyze Buzzwords
+                        </button>
+                    </form>
+                </div>
+
+                <div class="explanation-section" id="explanationSection">
+                    <h3 style="margin-bottom: 1rem; color: var(--gray-800); font-weight: 700;">Enhance with AI Explanations</h3>
+                    <p style="margin-bottom: 1.5rem; color: var(--gray-600);">
+                        Get detailed explanations for each buzzword to understand their strategic importance and context.
+                    </p>
+                    <button type="button" class="btn btn-secondary" id="generateExplanationsBtn">
+                        Generate AI Explanations for All
+                    </button>
+                </div>
+               
+                <div class="explanation-loading" id="explanationLoading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Generating AI explanations...</div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Analyzing questions and extracting buzzwords...</div>
+                </div>
+
+                <div class="results" id="results">
+                    <h2 class="results-header">Analysis Complete</h2>
+                   
+                    <div class="results-info">
+                        <div class="results-info-grid" id="resultsInfo">
+                            <!-- Results info will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="sort-controls" id="sortControls">
+                        <div class="sort-select">
+                            <label for="resultsSortBy">Sort Results By:</label>
+                            <select id="resultsSortBy">
+                                <option value="frequency">Frequency (TF-IDF)</option>
+                                <option value="celerity">Celerity (Early Appearance)</option>
+                                <option value="hybrid">Hybrid (Optimal for Studying)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <span id="selectedCount">0</span> buzzphrases selected for export
+                        </div>
+                    </div>
+
+                    <div class="buzzwords-grid" id="buzzwordsList">
+                        <!-- Buzzwords will be populated here -->
+                    </div>
+
+                    <div class="load-more-section" id="loadMoreSection" style="display: none;">
+                        <button type="button" class="btn btn-secondary" id="loadMoreBtn">Load More Buzzphrases</button>
+                    </div>
+                   
+                    <div class="export-section">
+                        <h3 style="margin-bottom: 1rem; color: var(--gray-800); font-weight: 700;">Export for Study</h3>
+                        <p style="margin-bottom: 1.5rem; color: var(--gray-600);">
+                            Download your selected buzzwords as a CSV file, ready for import into Anki or other flashcard apps.
+                        </p>
+                        <button type="button" class="btn btn-success" id="exportBtn">
+                            Export Selected to Anki (CSV)
+                        </button>
+                        <div style="height: 0.75rem;"></div>
+                        <button type="button" class="btn btn-secondary" id="addSelectedToCartBtn">Add Selected to Cart</button>
+                    </div>
+                </div>
+
+                <div class="error" id="error" style="display: none;"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="app-section" id="about" style="background-color: var(--bg-secondary);">
+        <div class="main-container">
+            <div class="app-header">
+                <h2 class="app-title">How Obsidian Works</h2>
+                <p class="app-subtitle">
+                    A transparent look into our sophisticated analysis pipeline, from data to actionable insights.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3 class="feature-title">1. Data Sourcing</h3>
+                    <p class="feature-description">
+                        The process begins by pulling thousands of high-quality, recent quiz bowl questions from the extensive qbreader.org public database, ensuring a relevant and up-to-date foundation for analysis.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧩</div>
+                    <h3 class="feature-title">2. Phrase Extraction</h3>
+                    <p class="feature-description">
+                        Using advanced Natural Language Processing (NLP), each question is dissected to extract meaningful phrases. This includes single keywords (unigrams), two-word phrases (bigrams), three-word phrases (trigrams), and longer n-grams, capturing the core concepts within the text.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3 class="feature-title">3. TF-IDF Analysis & Filtering</h3>
+                    <p class="feature-description">
+                        We employ the Term Frequency-Inverse Document Frequency (TF-IDF) algorithm to score these phrases. This highlights terms that are frequent for your topic but rare across all other topics, identifying true buzzwords. Irrelevant or overly generic phrases are intelligently filtered out to ensure only the most strategic terms remain.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script type="application/json" id="app-inline-disabled">
+        // Enhanced parallax effect
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.parallax::before');
+           
+            parallaxElements.forEach(el => {
+                const speed = 0.5;
+                el.style.transform = `translateY(${scrolled * speed}px) translateZ(-1px) scale(2)`;
+            });
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        let selectedSuggestionIndex = -1;
+        let suggestions = [];
+        let currentResults = null;
+        let selectedBuzzwords = new Set();
+        let displayedBuzzwordsCount = 20;
+
+        // Cart state (persisted in localStorage)
+        const CART_KEY = 'obsidian_cart_v1';
+        function loadCart() {
+            try {
+                const raw = localStorage.getItem(CART_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (_) { return []; }
+        }
+        function saveCart(items) {
+            localStorage.setItem(CART_KEY, JSON.stringify(items));
+            updateCartBadge();
+        }
+        function updateCartBadge() {
+            const badge = document.getElementById('cartCountBadge');
+            const count = loadCart().length;
+            if (count > 0) {
+                badge.style.display = 'inline-block';
+                badge.textContent = String(count);
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        function addItemsToCart(items) {
+            const cart = loadCart();
+            // De-duplicate by answerline + buzzphrase
+            const existing = new Set(cart.map(i => `${i.answerline}|||${i.buzzphrase}`));
+            for (const it of items) {
+                const key = `${it.answerline}|||${it.buzzphrase}`;
+                if (!existing.has(key)) {
+                    cart.push(it);
+                    existing.add(key);
+                }
+            }
+            saveCart(cart);
+        }
+        function removeItemFromCart(answerline, buzzphrase) {
+            const cart = loadCart().filter(i => !(i.answerline === answerline && i.buzzphrase === buzzphrase));
+            saveCart(cart);
+        }
+        function clearCart() {
+            saveCart([]);
+        }
+
+        // Get all form elements
+        const answerInput = document.getElementById('answer');
+        const suggestionsDiv = document.getElementById('autocompleteSuggestions');
+        const categorySelect = document.getElementById('category');
+        const maxQuestionsInput = document.getElementById('maxQuestions');
+        const sortBySelect = document.getElementById('sortBy');
+        const resultsSortBySelect = document.getElementById('resultsSortBy');
+        const submitBtn = document.getElementById('submitBtn');
+        const generateExplanationsBtn = document.getElementById('generateExplanationsBtn');
+        const explanationSection = document.getElementById('explanationSection');
+        const explanationLoading = document.getElementById('explanationLoading');
+        const exportBtn = document.getElementById('exportBtn');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const loadMoreSection = document.getElementById('loadMoreSection');
+        const selectedCountSpan = document.getElementById('selectedCount');
+        const addSelectedToCartBtn = document.getElementById('addSelectedToCartBtn');
+        const openCartBtn = document.getElementById('openCartBtn');
+        const closeCartBtn = document.getElementById('closeCartBtn');
+        const cartModalOverlay = document.getElementById('cartModalOverlay');
+        const cartListEl = document.getElementById('cartList');
+        const cartEmptyState = document.getElementById('cartEmptyState');
+        const exportCartBtn = document.getElementById('exportCartBtn');
+        const clearCartBtn = document.getElementById('clearCartBtn');
+
+        function updateFormState() {
+            const hasAnswer = answerInput.value.trim() !== '';
+            const hasValidQuestions = parseInt(maxQuestionsInput.value) >= 50;
+           
+            submitBtn.disabled = !(hasAnswer && hasValidQuestions);
+        }
+
+        // Enhanced autocomplete with better UX
+        answerInput.addEventListener('input', function() {
+            updateFormState();
+
+            const query = this.value.trim();
+            if (query.length < 2) {
+                hideSuggestions();
+                return;
+            }
+
+            // Add loading state to input
+            this.style.backgroundImage = "url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"%236b7280\" viewBox=\"0 0 16 16\"><path d=\"M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z\"/><path d=\"M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z\"/></svg>')";
+            this.style.backgroundRepeat = 'no-repeat';
+            this.style.backgroundPosition = 'right 1rem center';
+
+            const searchMode = document.getElementById('searchMode')?.value || 'exact';
+            fetch(`/autocomplete?query=${encodeURIComponent(query)}&search_mode=${searchMode}`)
+                .then(response => response.json())
+                .then(data => {
+                    this.style.backgroundImage = 'none';
+                    suggestions = data;
+                    showSuggestions(data);
+                })
+                .catch(error => {
+                    this.style.backgroundImage = 'none';
+                    console.error('Autocomplete error:', error);
+                    hideSuggestions();
+                });
+        });
+
+        categorySelect.addEventListener('change', updateFormState);
+        maxQuestionsInput.addEventListener('input', updateFormState);
+
+        answerInput.addEventListener('keydown', function(e) {
+            if (suggestionsDiv.style.display === 'none') return;
+
+            switch(e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, suggestions.length - 1);
+                    updateSelectedSuggestion();
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, -1);
+                    updateSelectedSuggestion();
+                    break;
+                case 'Enter':
+                    if (selectedSuggestionIndex >= 0) {
+                        e.preventDefault();
+                        selectSuggestion(suggestions[selectedSuggestionIndex]);
+                    }
+                    break;
+                case 'Escape':
+                    hideSuggestions();
+                    break;
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!answerInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                hideSuggestions();
+            }
+        });
+
+        function showSuggestions(suggestions) {
+            if (suggestions.length === 0) {
+                hideSuggestions();
+                return;
+            }
+
+            suggestionsDiv.innerHTML = '';
+            suggestions.forEach((suggestion, index) => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-suggestion';
+                div.textContent = suggestion;
+                div.addEventListener('click', () => selectSuggestion(suggestion));
+                suggestionsDiv.appendChild(div);
+            });
+
+            suggestionsDiv.style.display = 'block';
+            selectedSuggestionIndex = -1;
+        }
+
+        function hideSuggestions() {
+            suggestionsDiv.style.display = 'none';
+            selectedSuggestionIndex = -1;
+        }
+
+        function selectSuggestion(suggestion) {
+            answerInput.value = suggestion;
+            hideSuggestions();
+            answerInput.focus();
+            updateFormState();
+        }
+
+        function updateSelectedSuggestion() {
+            const suggestionElements = suggestionsDiv.querySelectorAll('.autocomplete-suggestion');
+            suggestionElements.forEach((el, index) => {
+                el.classList.toggle('selected', index === selectedSuggestionIndex);
+            });
+
+            if (selectedSuggestionIndex >= 0) {
+                suggestionElements[selectedSuggestionIndex].scrollIntoView({
+                    block: 'nearest'
+                });
+            }
+        }
+
+        // Enhanced form submission with better UX
+        document.getElementById('extractForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (submitBtn.disabled) {
+                showError('Please enter a topic and specify at least 50 questions to analyze.');
+                return;
+            }
+
+            const formData = new FormData(this);
+            const data = {
+                answer: answerInput.value.trim(),
+                category: formData.get('category'),
+                max_questions: parseInt(formData.get('maxQuestions')),
+                sort_by: formData.get('sortBy'),
+                search_mode: formData.get('searchMode')
+            };
+
+            // Reset state for new analysis
+            selectedBuzzwords.clear();
+            displayedBuzzwordsCount = 20;
+            updateSelectedCount();
+
+            // Enhanced loading state
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Analyzing...';
+
+            fetch('/extract', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Analyze Buzzwords';
+
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showResults(data);
+                    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Analyze Buzzwords';
+                showError('Network error occurred. Please check your connection and try again.');
+                console.error('Error:', error);
+            });
+        });
+
+        // Sort results functionality
+        resultsSortBySelect.addEventListener('change', function() {
+            if (!currentResults) return;
+           
+            const sortBy = this.value;
+            currentResults.sort_by = sortBy;
+           
+            if (sortBy === 'celerity') {
+                currentResults.all_buzzwords.sort((a, b) => b.celerity - a.celerity);
+            } else {
+                currentResults.all_buzzwords.sort((a, b) => b.score - a.score);
+            }
+           
+            // Reset display
+            displayedBuzzwordsCount = 20;
+            renderBuzzwordsList();
+        });
+
+        // Load more functionality
+        loadMoreBtn.addEventListener('click', function() {
+            if (!currentResults) return;
+           
+            displayedBuzzwordsCount = Math.min(displayedBuzzwordsCount + 20, currentResults.all_buzzwords.length);
+            renderBuzzwordsList();
+           
+            if (displayedBuzzwordsCount >= currentResults.all_buzzwords.length) {
+                loadMoreSection.style.display = 'none';
+            }
+        });
+
+        // AI Explanation generation
+        generateExplanationsBtn.addEventListener('click', function() {
+            if (!currentResults || !currentResults.buzzwords.length) {
+                showError('No buzzwords available. Please run an analysis first.');
+                return;
+            }
+
+            generateExplanationsBtn.disabled = true;
+            generateExplanationsBtn.innerHTML = 'Generating...';
+            explanationLoading.style.display = 'block';
+
+            explanationSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            const explanationPromises = currentResults.all_buzzwords.slice(0, displayedBuzzwordsCount).map(buzzwordData => {
+                return fetch('/generate-explanation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        buzzword: buzzwordData.phrase,
+                        topic: currentResults.answer
+                    })
+                })
+                .then(response => response.json())
+                .then(data => data.explanation || 'Explanation not available')
+                .catch(error => {
+                    console.error('Error generating explanation for', buzzwordData.phrase, ':', error);
+                    return 'Failed to generate explanation';
+                });
+            });
+
+            Promise.all(explanationPromises)
+                .then(explanations => {
+                    explanationLoading.style.display = 'none';
+                    generateExplanationsBtn.disabled = false;
+                    generateExplanationsBtn.innerHTML = 'Regenerate Explanations';
+                   
+                    currentResults.all_buzzwords.forEach((buzzwordData, index) => {
+                        if (index < explanations.length) {
+                            buzzwordData.explanation = explanations[index];
+                        }
+                    });
+                   
+                    updateBuzzwordsWithExplanations();
+                })
+                .catch(error => {
+                    explanationLoading.style.display = 'none';
+                    generateExplanationsBtn.disabled = false;
+                    generateExplanationsBtn.innerHTML = 'Generate AI Explanations for All';
+                    showError('Failed to generate explanations. Please try again.');
+                    console.error('Error generating explanations:', error);
+                });
+        });
+
+        function updateBuzzwordsWithExplanations() {
+            const buzzwordElements = document.querySelectorAll('.buzzword');
+            buzzwordElements.forEach((element, index) => {
+                const explanationDiv = element.querySelector('.buzzword-explanation');
+                const generateBtn = element.querySelector('.btn-generate-explanation');
+               
+                if (explanationDiv && currentResults.all_buzzwords[index] && currentResults.all_buzzwords[index].explanation) {
+                    explanationDiv.textContent = currentResults.all_buzzwords[index].explanation;
+                    if (generateBtn) {
+                        generateBtn.textContent = 'Regenerate Explanation';
+                    }
+                }
+            });
+        }
+
+        function toggleBuzzwordSelection(buzzword) {
+            if (selectedBuzzwords.has(buzzword)) {
+                selectedBuzzwords.delete(buzzword);
+            } else {
+                selectedBuzzwords.add(buzzword);
+            }
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            selectedCountSpan.textContent = selectedBuzzwords.size;
+        }
+
+        function openCart() {
+            renderCart();
+            cartModalOverlay.style.display = 'flex';
+        }
+        function closeCart() {
+            cartModalOverlay.style.display = 'none';
+        }
+        function renderCart() {
+            const cart = loadCart();
+            cartListEl.innerHTML = '';
+            if (cart.length === 0) {
+                cartEmptyState.style.display = 'block';
+                return;
+            }
+            cartEmptyState.style.display = 'none';
+            for (const item of cart) {
+                const row = document.createElement('div');
+                row.className = 'cart-item';
+                row.innerHTML = `<div style="font-weight:700; color: var(--gray-800);">${item.buzzphrase}</div>
+                                 <div style="color: var(--gray-600); font-size: 0.85rem;">${item.answerline}</div>`;
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'btn btn-danger btn-small';
+                removeBtn.textContent = 'Remove';
+                const container = document.createElement('div');
+                container.style.display = 'grid';
+                container.style.gridTemplateColumns = '1fr auto';
+                container.style.gap = '0.5rem 1rem';
+                container.style.alignItems = 'center';
+                container.appendChild(row);
+                container.appendChild(removeBtn);
+                removeBtn.addEventListener('click', () => {
+                    removeItemFromCart(item.answerline, item.buzzphrase);
+                    renderCart();
+                });
+                cartListEl.appendChild(container);
+            }
+        }
+
+        function renderBuzzwordsList() {
+            if (!currentResults) return;
+
+            const buzzwordsList = document.getElementById('buzzwordsList');
+            const displayedBuzzwords = currentResults.all_buzzwords.slice(0, displayedBuzzwordsCount);
+
+            buzzwordsList.innerHTML = '';
+           
+            if (displayedBuzzwords.length > 0) {
+                displayedBuzzwords.forEach((buzzwordData, index) => {
+                    const buzzwordElement = document.createElement('div');
+                    const isSelected = selectedBuzzwords.has(buzzwordData.phrase);
+                   
+                    buzzwordElement.className = `buzzword ${!isSelected ? 'deselected' : ''}`;
+                   
+                    const scoreText = currentResults.sort_by === 'celerity' 
+                        ? `Celerity: ${buzzwordData.celerity.toFixed(3)}` 
+                        : `Score: ${buzzwordData.score.toFixed(3)}`;
+                    
+                    const metaText = currentResults.sort_by === 'celerity'
+                        ? `<span>${scoreText}</span>`
+                        : '';
+
+                    buzzwordElement.innerHTML = `
+                        <div class="buzzword-header">
+                            <div class="buzzword-number">${index + 1}</div>
+                            <div class="buzzword-text-container">
+                                <div class="buzzword-text">${buzzwordData.phrase}</div>
+                                <div class="buzzword-meta">
+                                    ${metaText}
+                                </div>
+                                <div class="buzzword-actions">
+                                    <button type="button" class="btn btn-small btn-secondary btn-generate-explanation">
+                                        Generate Explanation
+                                    </button>
+                                    <button type="button" class="btn btn-small ${isSelected ? 'btn-danger' : 'btn-success'} btn-toggle-select">
+                                        <span>${isSelected ? '✕' : '✓'}</span>
+                                        ${isSelected ? 'Remove' : 'Select'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="buzzword-explanation">${buzzwordData.explanation || 'Click "Generate Explanation" to get AI-powered insights about this buzzword.'}</div>
+                    `;
+                   
+                    const generateBtn = buzzwordElement.querySelector('.btn-generate-explanation');
+                    const toggleBtn = buzzwordElement.querySelector('.btn-toggle-select');
+                    const explanationDiv = buzzwordElement.querySelector('.buzzword-explanation');
+                   
+                    generateBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        generateSingleExplanation(buzzwordData, buzzwordElement);
+                    });
+                   
+                    toggleBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        toggleBuzzwordSelection(buzzwordData.phrase);
+                        buzzwordElement.classList.toggle('deselected');
+                        toggleBtn.classList.toggle('btn-danger');
+                        toggleBtn.classList.toggle('btn-success');
+                        toggleBtn.innerHTML = selectedBuzzwords.has(buzzwordData.phrase)
+                            ? '<span>✕</span> Remove'
+                            : '<span>✓</span> Select';
+                    });
+                   
+                    buzzwordElement.addEventListener('click', function() {
+                        explanationDiv.classList.toggle('expanded');
+                    });
+                   
+                    buzzwordsList.appendChild(buzzwordElement);
+                });
+
+                explanationSection.style.display = 'block';
+               
+                if (currentResults.all_buzzwords.length > displayedBuzzwordsCount) {
+                    loadMoreSection.style.display = 'block';
+                } else {
+                    loadMoreSection.style.display = 'none';
+                }
+            } else {
+                buzzwordsList.innerHTML = `
+                    <div style="text-align: center; padding: 4rem; color: var(--gray-500);">
+                        <h3 style="margin-bottom: 1rem; color: var(--gray-600);">No buzzwords found</h3>
+                        <p>Try adjusting your search parameters or selecting a different category.</p>
+                    </div>
+                `;
+                explanationSection.style.display = 'none';
+                loadMoreSection.style.display = 'none';
+            }
+        }
+
+        function generateSingleExplanation(buzzwordData, buzzwordElement) {
+            const generateBtn = buzzwordElement.querySelector('.btn-generate-explanation');
+            const explanationDiv = buzzwordElement.querySelector('.buzzword-explanation');
+           
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = 'Generating...';
+           
+            fetch('/generate-explanation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    buzzword: buzzwordData.phrase,
+                    topic: currentResults.answer
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = 'Regenerate Explanation';
+               
+                if (data.explanation) {
+                    explanationDiv.textContent = data.explanation;
+                    buzzwordData.explanation = data.explanation;
+                    explanationDiv.classList.add('expanded');
+                }
+            })
+            .catch(error => {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = 'Generate Explanation';
+                showError('Failed to generate explanation. Please try again.');
+                console.error('Error generating explanation:', error);
+            });
+        }
+
+        function showResults(data) {
+            currentResults = data;
+            const resultsDiv = document.getElementById('results');
+            const infoDiv = document.getElementById('resultsInfo');
+
+            resultsSortBySelect.value = data.sort_by;
+            sortBySelect.value = data.sort_by;
+
+            infoDiv.innerHTML = `
+                <div class="result-stat">
+                    <span class="result-stat-value">${data.answer}</span>
+                    <span class="result-stat-label">Topic Analyzed</span>
+                </div>
+                <div class="result-stat">
+                    <span class="result-stat-value">${data.category || 'All'}</span>
+                    <span class="result-stat-label">Category Filter</span>
+                </div>
+                <div class="result-stat">
+                    <span class="result-stat-value">${data.total_count}</span>
+                    <span class="result-stat-label">Total Buzzwords Found</span>
+                </div>
+                <div class="result-stat">
+                    <span class="result-stat-value">${data.sort_by}</span>
+                    <span class="result-stat-label">Sorted By</span>
+                </div>
+                <div class="result-stat">
+                    <span class="result-stat-value">${data.search_mode === 'semantic' ? 'AI-Powered' : 'Exact Text'}</span>
+                    <span class="result-stat-label">Search Mode</span>
+                </div>
+            `;
+
+            // Select all buzzwords by default for convenience
+            selectedBuzzwords = new Set(data.all_buzzwords.map(b => b.phrase));
+            updateSelectedCount();
+
+            renderBuzzwordsList();
+            resultsDiv.style.display = 'block';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+           
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        exportBtn.addEventListener('click', function() {
+            if (!currentResults || selectedBuzzwords.size === 0) {
+                showError('No buzzwords selected for export. Please select at least one buzzphrase.');
+                return;
+            }
+
+            const exportBtn = this;
+            exportBtn.disabled = true;
+            exportBtn.innerHTML = 'Exporting...';
+
+            // Convert Set to Array and get the full buzzword data for selected items
+            const selectedBuzzwordsData = currentResults.all_buzzwords.filter(b =>
+                selectedBuzzwords.has(b.phrase)
+            );
+
+            fetch('/export-anki', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    answer: currentResults.answer,
+                    category: currentResults.category,
+                    buzzwords: currentResults.all_buzzwords.map(b => b.phrase),
+                    selected_buzzwords: selectedBuzzwordsData.map(b => b.phrase)
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                } else {
+                    return response.json().then(data => {
+                        throw new Error(data.error || 'Export failed: Server returned an error.');
+                    });
+                }
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${currentResults.answer.replace(/\s+/g, '_')}_buzzwords.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+               
+                exportBtn.disabled = false;
+                exportBtn.innerHTML = 'Export Selected to Anki (CSV)';
+            })
+            .catch(error => {
+                showError(`Export failed: ${error.message}`);
+                exportBtn.disabled = false;
+                exportBtn.innerHTML = 'Export Selected to Anki (CSV)';
+                console.error('Export error:', error);
+            });
+        });
+
+        // Add selected buzzphrases to cart
+        addSelectedToCartBtn.addEventListener('click', function() {
+            if (!currentResults || selectedBuzzwords.size === 0) {
+                showError('No buzzphrases selected to add.');
+                return;
+            }
+            const items = currentResults.all_buzzwords
+                .filter(b => selectedBuzzwords.has(b.phrase))
+                .map(b => ({ answerline: currentResults.answer, buzzphrase: b.phrase, category: currentResults.category }));
+            addItemsToCart(items);
+        });
+
+        // Cart modal handlers
+        openCartBtn.addEventListener('click', function(e) { e.preventDefault(); openCart(); });
+        closeCartBtn.addEventListener('click', closeCart);
+        cartModalOverlay.addEventListener('click', function(e) {
+            if (e.target === cartModalOverlay) closeCart();
+        });
+
+        clearCartBtn.addEventListener('click', function() {
+            clearCart();
+            renderCart();
+        });
+
+        exportCartBtn.addEventListener('click', function() {
+            const cart = loadCart();
+            if (cart.length === 0) {
+                showError('Cart is empty.');
+                return;
+            }
+            // Build flashcards format for backend
+            const payload = { flashcards: cart, category: '' };
+            fetch('/export-anki', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (response.ok) return response.blob();
+                return response.json().then(d => { throw new Error(d.error || 'Export failed'); });
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'shopping_cart_flashcards.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(err => showError(`Export failed: ${err.message}`));
+        });
+
+        // Initialize cart badge
+        updateCartBadge();
+
+        updateFormState();
+    </script>
+    <script defer src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
